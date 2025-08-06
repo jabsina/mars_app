@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mars_app/aboutus.dart';
 import 'package:mars_app/feedback.dart';
 import 'package:mars_app/mars_home.dart';
 
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home:WeatherControl(),
+      home:AboutUsPage(),
     );
   }
 }

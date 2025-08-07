@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'aboutus.dart';
+import 'feedback.dart'; // ✅ Add this
 
 class WeatherControl extends StatefulWidget {
   const WeatherControl({super.key});
@@ -11,7 +13,7 @@ class WeatherControl extends StatefulWidget {
 }
 
 class _WeatherControlState extends State<WeatherControl> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   int currentIndex = 0;
   Timer? _timer;
 
@@ -48,16 +50,19 @@ class _WeatherControlState extends State<WeatherControl> {
   @override
   void initState() {
     super.initState();
-    _initializeVideo();
-    _timer = Timer.periodic(const Duration(minutes: 1), (timer) => _nextWeather());
+    _initVideo();
+    _timer = Timer.periodic(
+      const Duration(seconds: 30),
+          (_) => _nextWeather(),
+    );
   }
 
-  void _initializeVideo() {
-    final videoPath = weatherData[currentIndex]['video']!;
-    _controller = VideoPlayerController.asset(videoPath)
+  void _initVideo() {
+    final video = weatherData[currentIndex]['video']!;
+    _controller = VideoPlayerController.asset(video)
       ..initialize().then((_) {
         if (!mounted) return;
-        _controller
+        _controller!
           ..setLooping(true)
           ..setVolume(0.0)
           ..play();
@@ -65,20 +70,16 @@ class _WeatherControlState extends State<WeatherControl> {
       });
   }
 
-  Future<void> _nextWeather() async {
-    await _controller.pause();
-    await _controller.dispose();
-
-    setState(() {
-      currentIndex = (currentIndex + 1) % weatherData.length;
-    });
-
-    _initializeVideo();
+  void _nextWeather() async {
+    await _controller?.pause();
+    await _controller?.dispose();
+    currentIndex = (currentIndex + 1) % weatherData.length;
+    _initVideo();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -92,42 +93,81 @@ class _WeatherControlState extends State<WeatherControl> {
       drawer: _buildDrawer(),
       body: Stack(
         children: [
-          // Video Background with crossfade
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 700),
-            child: _controller.value.isInitialized
-                ? SizedBox.expand(
-              key: ValueKey(currentIndex),
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: _controller.value.size.width,
-                  height: _controller.value.size.height,
-                  child: VideoPlayer(_controller),
-                ),
+          _controller != null && _controller!.value.isInitialized
+              ? SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _controller!.value.size.width,
+                height: _controller!.value.size.height,
+                child: VideoPlayer(_controller!),
               ),
-            )
-                : const Center(child: CircularProgressIndicator()),
-          ),
+            ),
+          )
+              : const Center(child: CircularProgressIndicator()),
 
-          // Foreground Content
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildMenuButton(),
-                  const SizedBox(height: 20),
-                  _buildHeader(weather),
-                  const SizedBox(height: 16),
-                  _buildInfoCard(weather),
-                  const SizedBox(height: 20),
-                  _buildQuote(weather['quote']!),
-                  const Spacer(),
-                  _buildDisclaimer(),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Builder(
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.white),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      ),
+                    ),
+                  ),
+                ),
+                Text(
+                  weather['temperature']!,
+                  style: GoogleFonts.orbitron(
+                    fontSize: 42,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  weather['status']!,
+                  style: GoogleFonts.orbitron(
+                    fontSize: 20,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildRow("Wind", weather['wind']!),
+                      _buildRow("Dust Level", weather['dust']!),
+                      _buildRow("Radiation", weather['radiation']!),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    weather['quote']!,
+                    style: GoogleFonts.orbitron(
+                      fontSize: 14,
+                      color: Colors.deepOrangeAccent,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -135,88 +175,20 @@ class _WeatherControlState extends State<WeatherControl> {
     );
   }
 
-  Widget _buildMenuButton() {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(Map<String, String> weather) {
-    return Column(
-      children: [
-        Text(
-          weather['temperature']!,
-          style: GoogleFonts.orbitron(
-            fontSize: 42,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          weather['status']!,
-          style: GoogleFonts.orbitron(
-            fontSize: 20,
-            color: Colors.white70,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoCard(Map<String, String> weather) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildInfoRow("Wind", weather['wind']!),
-          _buildInfoRow("Dust Level", weather['dust']!),
-          _buildInfoRow("Radiation", weather['radiation']!),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text("$label: ", style: GoogleFonts.orbitron(color: Colors.white)),
-          Text(value, style: GoogleFonts.orbitron(color: Colors.white)),
+          Text(
+            "$label: ",
+            style: GoogleFonts.orbitron(color: Colors.white),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.orbitron(color: Colors.white),
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildQuote(String quote) {
-    return Text(
-      quote,
-      style: GoogleFonts.orbitron(
-        fontSize: 14,
-        color: Colors.deepOrangeAccent,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
-  Widget _buildDisclaimer() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        "Disclaimer: This is a fictional simulation for entertainment only. 🛰",
-        style: GoogleFonts.orbitron(color: Colors.white54, fontSize: 12),
-        textAlign: TextAlign.center,
       ),
     );
   }
@@ -240,22 +212,38 @@ class _WeatherControlState extends State<WeatherControl> {
               ),
             ),
           ),
-          _buildDrawerItem(Icons.info_outline, "About", "This is a Mars weather simulation UI."),
-          _buildDrawerItem(Icons.settings, "Settings", "Settings are currently unavailable."),
-          _buildDrawerItem(Icons.bug_report, "Report Glitch", "This feature is under maintenance."),
+          _buildDrawerItem(Icons.people, "About Us", () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutUsPage()),
+            );
+          }),
+          _buildDrawerItem(Icons.feedback, "Feedback", () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FeedbackPage()),
+            );
+          }),
+          _buildDrawerItem(Icons.settings, "Settings", () {
+            Navigator.pop(context);
+            _showDialog("Settings", "Settings are currently unavailable.");
+          }),
+          _buildDrawerItem(Icons.bug_report, "Report Glitch", () {
+            Navigator.pop(context);
+            _showDialog("Glitch Report", "This feature is under maintenance.");
+          }),
         ],
       ),
     );
   }
 
-  ListTile _buildDrawerItem(IconData icon, String label, String message) {
+  ListTile _buildDrawerItem(IconData icon, String label, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
       title: Text(label, style: GoogleFonts.orbitron(color: Colors.white)),
-      onTap: () {
-        Navigator.pop(context);
-        _showDialog(label, message);
-      },
+      onTap: onTap,
     );
   }
 
@@ -270,7 +258,7 @@ class _WeatherControlState extends State<WeatherControl> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text("CLOSE", style: TextStyle(color: Colors.deepOrange)),
-          ),
+          )
         ],
       ),
     );

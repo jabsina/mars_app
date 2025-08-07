@@ -38,7 +38,7 @@ class _WeatherControlState extends State<WeatherControl> {
       'video': 'assets/mars_weather_3.mp4',
       'temperature': '-88°C',
       'status': 'Radiation Glitch Storm',
-      'wind': '90 km/h (or are those static waves?)',
+      'wind': '90 km/h',
       'dust': 'Glitched Particles',
       'radiation': 'Error 404: Too Much',
       'quote': "Reality.exe has stopped responding ⚡👁️‍🗨️",

@@ -11,7 +11,7 @@ class WeatherControl extends StatefulWidget {
 }
 
 class _WeatherControlState extends State<WeatherControl> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   int currentIndex = 0;
   Timer? _timer;
 
@@ -34,44 +34,52 @@ class _WeatherControlState extends State<WeatherControl> {
       'radiation': 'Dim',
       'quote': "Nothing like a blackout on a dead planet 🌘",
     },
+    {
+      'video': 'assets/mars_weather_3.mp4',
+      'temperature': '-88°C',
+      'status': 'Radiation Glitch Storm',
+      'wind': '90 km/h',
+      'dust': 'Glitched Particles',
+      'radiation': 'Error 404: Too Much',
+      'quote': "Reality.exe has stopped responding ⚡👁️‍🗨️",
+    },
   ];
 
   @override
   void initState() {
     super.initState();
-    _playVideo();
+    _initVideo();
 
     _timer = Timer.periodic(
-      const Duration(minutes: 1), // Change to seconds for testing if needed
-          (timer) => _nextWeather(),
+      const Duration(minutes: 1),
+          (_) => _nextWeather(),
     );
   }
 
-  void _playVideo() {
-    _controller = VideoPlayerController.asset(weatherData[currentIndex]['video']!)
+  void _initVideo() {
+    final video = weatherData[currentIndex]['video']!;
+    _controller = VideoPlayerController.asset(video)
       ..initialize().then((_) {
         if (!mounted) return;
-        _controller.setLooping(true);
-        _controller.setVolume(0.0);
-        _controller.play();
+        _controller!
+          ..setLooping(true)
+          ..setVolume(0.0)
+          ..play();
         setState(() {});
       });
   }
 
-  Future<void> _nextWeather() async {
-    await _controller.pause();
-    await _controller.dispose();
+  void _nextWeather() async {
+    await _controller?.pause();
+    await _controller?.dispose();
 
-    setState(() {
-      currentIndex = (currentIndex + 1) % weatherData.length;
-    });
-
-    _playVideo();
+    currentIndex = (currentIndex + 1) % weatherData.length;
+    _initVideo();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -84,21 +92,20 @@ class _WeatherControlState extends State<WeatherControl> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 🔴 Background video
-          _controller.value.isInitialized
+          _controller != null && _controller!.value.isInitialized
               ? SizedBox.expand(
             child: FittedBox(
               fit: BoxFit.cover,
               child: SizedBox(
-                width: _controller.value.size.width,
-                height: _controller.value.size.height,
-                child: VideoPlayer(_controller),
+                width: _controller!.value.size.width,
+                height: _controller!.value.size.height,
+                child: VideoPlayer(_controller!),
               ),
             ),
           )
               : const Center(child: CircularProgressIndicator()),
 
-          // ⚪ Foreground content (floating tabs)
+          // Floating UI elements
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class WeatherControl extends StatefulWidget {
   const WeatherControl({super.key});
@@ -12,53 +12,79 @@ class WeatherControl extends StatefulWidget {
 
 class _WeatherControlState extends State<WeatherControl> {
   late VideoPlayerController _controller;
-  final List<String> _videoPaths = [
-    'assets/mars_weather_1.mp4',
-    'assets/mars_weather_2.mp4',
+  int currentIndex = 0;
+  Timer? _timer;
+
+  final List<Map<String, String>> weatherData = [
+    {
+      'video': 'assets/mars_weather_1.mp4',
+      'temperature': '-65°C',
+      'status': 'Dust Storm',
+      'wind': '120 km/h',
+      'dust': 'Extreme',
+      'radiation': 'High',
+      'quote': "Perfect weather to get blown off a cliff 💨",
+    },
+    {
+      'video': 'assets/mars_weather_2.mp4',
+      'temperature': '-78°C',
+      'status': 'Solar Eclipse',
+      'wind': '35 km/h',
+      'dust': 'Low',
+      'radiation': 'Dim',
+      'quote': "Nothing like a blackout on a dead planet 🌘",
+    },
   ];
-  int _currentVideoIndex = 0;
-  Timer? _videoSwitchTimer;
 
   @override
   void initState() {
     super.initState();
-    _initializeVideo(_videoPaths[_currentVideoIndex]);
-    _startVideoSwitchTimer();
+    _playVideo();
+
+    _timer = Timer.periodic(
+      const Duration(minutes: 1), // Change to seconds for testing if needed
+          (timer) => _nextWeather(),
+    );
   }
 
-  void _initializeVideo(String path) {
-    _controller = VideoPlayerController.asset(path)
+  void _playVideo() {
+    _controller = VideoPlayerController.asset(weatherData[currentIndex]['video']!)
       ..initialize().then((_) {
-        setState(() {});
+        if (!mounted) return;
         _controller.setLooping(true);
-        _controller.setVolume(0.0); // Mute
+        _controller.setVolume(0.0);
         _controller.play();
+        setState(() {});
       });
   }
 
-  void _startVideoSwitchTimer() {
-    _videoSwitchTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      _currentVideoIndex = (_currentVideoIndex + 1) % _videoPaths.length;
-      _controller.pause();
-      _controller.dispose();
-      _initializeVideo(_videoPaths[_currentVideoIndex]);
+  Future<void> _nextWeather() async {
+    await _controller.pause();
+    await _controller.dispose();
+
+    setState(() {
+      currentIndex = (currentIndex + 1) % weatherData.length;
     });
+
+    _playVideo();
   }
 
   @override
   void dispose() {
-    _videoSwitchTimer?.cancel();
     _controller.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final weather = weatherData[currentIndex];
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Background video
+          // 🔴 Background video
           _controller.value.isInitialized
               ? SizedBox.expand(
             child: FittedBox(
@@ -72,36 +98,83 @@ class _WeatherControlState extends State<WeatherControl> {
           )
               : const Center(child: CircularProgressIndicator()),
 
-          // Foreground content
+          // ⚪ Foreground content (floating tabs)
           SafeArea(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  title: Text(
-                    "Weather",
-                    style: GoogleFonts.orbitron(
-                      fontSize: 26,
-                      color: Colors.deepOrange,
-                    ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Icon(Icons.menu, color: Colors.white),
                   ),
-                  centerTitle: true,
                 ),
-                const Spacer(),
+                Text(
+                  weather['temperature']!,
+                  style: GoogleFonts.orbitron(
+                    fontSize: 42,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  weather['status']!,
+                  style: GoogleFonts.orbitron(
+                    fontSize: 20,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildRow("Wind", weather['wind']!),
+                      _buildRow("Dust Level", weather['dust']!),
+                      _buildRow("Radiation", weather['radiation']!),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
-                    "Mars Weather Simulation 🌌",
+                    weather['quote']!,
                     style: GoogleFonts.orbitron(
-                      fontSize: 18,
-                      color: Colors.white,
+                      fontSize: 14,
+                      color: Colors.deepOrangeAccent,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text(
+            "$label: ",
+            style: GoogleFonts.orbitron(color: Colors.white),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.orbitron(color: Colors.white),
           ),
         ],
       ),

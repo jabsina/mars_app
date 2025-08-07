@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
@@ -11,21 +12,42 @@ class WeatherControl extends StatefulWidget {
 
 class _WeatherControlState extends State<WeatherControl> {
   late VideoPlayerController _controller;
+  final List<String> _videoPaths = [
+    'assets/mars_weather_1.mp4',
+    'assets/mars_weather_2.mp4',
+  ];
+  int _currentVideoIndex = 0;
+  Timer? _videoSwitchTimer;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset("assets/mars_weather_1.mp4")
+    _initializeVideo(_videoPaths[_currentVideoIndex]);
+    _startVideoSwitchTimer();
+  }
+
+  void _initializeVideo(String path) {
+    _controller = VideoPlayerController.asset(path)
       ..initialize().then((_) {
-        _controller.setLooping(true);
-        _controller.setVolume(0.0); // mute
-        _controller.play();
         setState(() {});
+        _controller.setLooping(true);
+        _controller.setVolume(0.0); // Mute
+        _controller.play();
       });
+  }
+
+  void _startVideoSwitchTimer() {
+    _videoSwitchTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      _currentVideoIndex = (_currentVideoIndex + 1) % _videoPaths.length;
+      _controller.pause();
+      _controller.dispose();
+      _initializeVideo(_videoPaths[_currentVideoIndex]);
+    });
   }
 
   @override
   void dispose() {
+    _videoSwitchTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }

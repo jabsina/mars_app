@@ -38,7 +38,7 @@ class _WeatherControlState extends State<WeatherControl> {
       'video': 'assets/mars_weather_3.mp4',
       'temperature': '-88°C',
       'status': 'Radiation Glitch Storm',
-      'wind': '90 km/h',
+      'wind': '90 km/h (or are those static waves?)',
       'dust': 'Glitched Particles',
       'radiation': 'Error 404: Too Much',
       'quote': "Reality.exe has stopped responding ⚡👁️‍🗨️",
@@ -90,8 +90,10 @@ class _WeatherControlState extends State<WeatherControl> {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      drawer: _buildDrawer(),
       body: Stack(
         children: [
+          // Background Video
           _controller != null && _controller!.value.isInitialized
               ? SizedBox.expand(
             child: FittedBox(
@@ -105,7 +107,7 @@ class _WeatherControlState extends State<WeatherControl> {
           )
               : const Center(child: CircularProgressIndicator()),
 
-          // Floating UI elements
+          // Floating Tabs
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -113,9 +115,14 @@ class _WeatherControlState extends State<WeatherControl> {
                 const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Icon(Icons.menu, color: Colors.white),
+                  child: Builder(
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.white),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      ),
+                    ),
                   ),
                 ),
                 Text(
@@ -183,6 +190,67 @@ class _WeatherControlState extends State<WeatherControl> {
             value,
             style: GoogleFonts.orbitron(color: Colors.white),
           ),
+        ],
+      ),
+    );
+  }
+
+  Drawer _buildDrawer() {
+    return Drawer(
+      backgroundColor: Colors.black87,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(color: Colors.deepOrange),
+            child: Center(
+              child: Text(
+                'Mars Control Center',
+                style: GoogleFonts.orbitron(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          _buildDrawerItem(Icons.info_outline, "About", () {
+            Navigator.pop(context);
+            _showDialog("About", "This is a Mars weather simulation UI.");
+          }),
+          _buildDrawerItem(Icons.settings, "Settings", () {
+            Navigator.pop(context);
+            _showDialog("Settings", "Settings are currently unavailable.");
+          }),
+          _buildDrawerItem(Icons.bug_report, "Report Glitch", () {
+            Navigator.pop(context);
+            _showDialog("Glitch Report", "This feature is under maintenance.");
+          }),
+        ],
+      ),
+    );
+  }
+
+  ListTile _buildDrawerItem(IconData icon, String label, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(label, style: GoogleFonts.orbitron(color: Colors.white)),
+      onTap: onTap,
+    );
+  }
+
+  void _showDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: Colors.black,
+        title: Text(title, style: GoogleFonts.orbitron(color: Colors.deepOrange)),
+        content: Text(message, style: GoogleFonts.orbitron(color: Colors.white)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CLOSE", style: TextStyle(color: Colors.deepOrange)),
+          )
         ],
       ),
     );

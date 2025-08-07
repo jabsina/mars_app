@@ -49,7 +49,7 @@ class _WeatherControlState extends State<WeatherControl> {
   void initState() {
     super.initState();
     _initializeVideo();
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) => _nextWeather());
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) => _nextWeather());
   }
 
   void _initializeVideo() {

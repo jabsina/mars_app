@@ -54,15 +54,6 @@ class _WeatherControlState extends State<WeatherControl> {
       'radiation': 'Weirdly Musical',
       'quote': "Aliens are just saying hi… very aggressively 👽⚡",
     },
-    {
-      'video': 'assets/mars_weather_5.mp4',
-      'temperature': '-70°C',
-      'status': 'Mars Aurora',
-      'wind': '20 km/h',
-      'dust': 'Shimmering Particles',
-      'radiation': 'Magnetic Glow',
-      'quote': "The Martian sky is dancing just for you 🌌✨",
-    },
   ];
 
   @override

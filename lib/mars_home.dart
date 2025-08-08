@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'aboutus.dart';
-import 'feedback.dart'; // ✅ Add this
+import 'feedback.dart';
 
 class WeatherControl extends StatefulWidget {
   const WeatherControl({super.key});
@@ -44,6 +44,15 @@ class _WeatherControlState extends State<WeatherControl> {
       'dust': 'Glitched Particles',
       'radiation': 'Error 404: Too Much',
       'quote': "Reality.exe has stopped responding ⚡👁‍🗨",
+    },
+    {
+      'video': 'assets/mars_weather_4.mp4',
+      'temperature': '-72°C',
+      'status': 'UFO Thunder War',
+      'wind': '140 km/h',
+      'dust': 'Electrified Particles',
+      'radiation': 'Critical',
+      'quote': "When the forecast says ‘chance of UFOs’ and it’s 100% accurate ⚡🛸",
     },
   ];
 

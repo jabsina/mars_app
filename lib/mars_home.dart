@@ -54,6 +54,15 @@ class _WeatherControlState extends State<WeatherControl> {
       'radiation': 'Weirdly Musical',
       'quote': "Aliens are just saying hi… very aggressively 👽⚡",
     },
+    {
+      'video': 'assets/mars_weather_5.mp4',
+      'temperature': '-70°C',
+      'status': 'Aurora Lights',
+      'wind': '20 km/h',
+      'dust': 'Shimmering',
+      'radiation': 'Psychedelic Glow',
+      'quote': "Nature’s light show — totally free, slightly deadly 🌌",
+    },
   ];
 
   @override
@@ -180,7 +189,7 @@ class _WeatherControlState extends State<WeatherControl> {
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Text(
-                    "Disclaimer: If you end up a Martian popsicle, kindly direct all complaints to literally anyone but us. 🚀",
+                    "Disclaimer: If you freeze solid out there, consider yourself part of Mars’ permanent décor. 🚀",
                     style: GoogleFonts.orbitron(
                       fontSize: 10,
                       color: Colors.white54,

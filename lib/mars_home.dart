@@ -134,7 +134,7 @@ class _WeatherControlState extends State<WeatherControl> {
           style: GoogleFonts.orbitron(color: Colors.white),
         ),
         backgroundColor: Colors.black,
-        duration: const Duration(seconds: 4),
+        duration: const Duration(seconds: 8),
         behavior: SnackBarBehavior.floating,
       ),
     );

@@ -48,11 +48,20 @@ class _WeatherControlState extends State<WeatherControl> {
     {
       'video': 'assets/mars_weather_4.mp4',
       'temperature': '-72°C',
-      'status': 'UFO Thunder War',
-      'wind': '140 km/h',
-      'dust': 'Electrified Particles',
-      'radiation': 'Critical',
-      'quote': "When the forecast says ‘chance of UFOs’ and it’s 100% accurate ⚡🛸",
+      'status': 'Alien Storm',
+      'wind': '150 km/h',
+      'dust': 'Bioluminescent',
+      'radiation': 'Weirdly Musical',
+      'quote': "Aliens are just saying hi… very aggressively 👽⚡",
+    },
+    {
+      'video': 'assets/mars_weather_5.mp4',
+      'temperature': '-70°C',
+      'status': 'Mars Aurora',
+      'wind': '20 km/h',
+      'dust': 'Shimmering Particles',
+      'radiation': 'Magnetic Glow',
+      'quote': "The Martian sky is dancing just for you 🌌✨",
     },
   ];
 
@@ -235,6 +244,10 @@ class _WeatherControlState extends State<WeatherControl> {
               MaterialPageRoute(builder: (_) => const FeedbackPage()),
             );
           }),
+          _buildDrawerItem(Icons.security, "Mars VPN", () {
+            Navigator.pop(context);
+            _showVPNDialog();
+          }),
           _buildDrawerItem(Icons.settings, "Settings", () {
             Navigator.pop(context);
             _showDialog("Settings", "Settings are currently unavailable.");
@@ -270,6 +283,40 @@ class _WeatherControlState extends State<WeatherControl> {
           )
         ],
       ),
+    );
+  }
+
+  void _showVPNDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: Text("Mars VPN",
+              style: GoogleFonts.orbitron(color: Colors.deepOrange)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              Text(
+                "Encrypting your oxygen packets...\nThis may take forever 🚀",
+                style: GoogleFonts.orbitron(color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              const CircularProgressIndicator(color: Colors.deepOrange),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("CANCEL",
+                  style: TextStyle(color: Colors.deepOrange)),
+            ),
+          ],
+        );
+      },
     );
   }
 }

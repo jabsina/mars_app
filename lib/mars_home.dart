@@ -176,6 +176,18 @@ class _WeatherControlState extends State<WeatherControl> {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    "Disclaimer: If you end up a Martian popsicle, kindly direct all complaints to literally anyone but us. 🚀",
+                    style: GoogleFonts.orbitron(
+                      fontSize: 10,
+                      color: Colors.white54,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
           ),

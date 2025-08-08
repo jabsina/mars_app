@@ -18,7 +18,10 @@ class _WeatherControlState extends State<WeatherControl> {
   int currentIndex = 0;
   Timer? _timer;
   Timer? _sarcasmTimer;
+  Timer? _factsTimer;
   final Random _random = Random();
+
+  String _currentMarsFact = "";
 
   final List<Map<String, String>> weatherData = [
     {
@@ -80,6 +83,18 @@ class _WeatherControlState extends State<WeatherControl> {
     "Oxygen is overrated anyway.",
   ];
 
+  final List<String> sarcasticMarsFacts = [
+    "Mars sunsets are blue… unlike your life, which is mostly grey.",
+    "A day on Mars is 24h 39m… still not enough time for you to be productive.",
+    "There’s no oxygen on Mars… just like in your social life.",
+    "Mars has two moons… both of them ignoring you.",
+    "The average temperature on Mars is -63°C… colder than your ex’s heart.",
+    "It takes 687 Earth days to orbit the Sun… and you still wouldn’t finish that project.",
+    "Mars is covered in iron oxide… so it’s literally rusting away like your motivation.",
+    "Water exists on Mars… too bad you can’t drink sarcasm.",
+    "Mars is 225 million km away from Earth… and still closer than your goals."
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -90,6 +105,13 @@ class _WeatherControlState extends State<WeatherControl> {
     );
 
     _scheduleRandomSarcasm();
+
+    // Initialize the first Mars fact and start timer to update it
+    _updateMarsFact();
+    _factsTimer = Timer.periodic(
+      const Duration(seconds: 15),
+          (_) => _updateMarsFact(),
+    );
   }
 
   void _initVideo() {
@@ -113,9 +135,7 @@ class _WeatherControlState extends State<WeatherControl> {
   }
 
   void _scheduleRandomSarcasm() {
-    // Cancel old timer
     _sarcasmTimer?.cancel();
-    // Random delay between 30–90 seconds
     int delay = 30 + _random.nextInt(61);
     _sarcasmTimer = Timer(Duration(seconds: delay), () {
       _showSarcasm();
@@ -140,11 +160,20 @@ class _WeatherControlState extends State<WeatherControl> {
     );
   }
 
+  void _updateMarsFact() {
+    if (!mounted) return;
+    setState(() {
+      _currentMarsFact =
+      sarcasticMarsFacts[_random.nextInt(sarcasticMarsFacts.length)];
+    });
+  }
+
   @override
   void dispose() {
     _controller?.dispose();
     _timer?.cancel();
     _sarcasmTimer?.cancel();
+    _factsTimer?.cancel();
     super.dispose();
   }
 
@@ -226,11 +255,15 @@ class _WeatherControlState extends State<WeatherControl> {
                     weather['quote']!,
                     style: GoogleFonts.orbitron(
                       fontSize: 14,
-                      color: Colors.deepOrangeAccent,
+                      color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
+
+                // New Mars Facts Tile inserted here
+                _buildMarsFactsTile(),
+
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -244,6 +277,31 @@ class _WeatherControlState extends State<WeatherControl> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMarsFactsTile() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.deepOrange.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          const Text("👽 ", style: TextStyle(fontSize: 24)),
+          Expanded(
+            child: Text(
+              _currentMarsFact,
+              style: GoogleFonts.orbitron(
+                fontSize: 16,
+                color: Colors.white70,
+              ),
             ),
           ),
         ],

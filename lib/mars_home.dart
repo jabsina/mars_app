@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,6 +17,8 @@ class _WeatherControlState extends State<WeatherControl> {
   VideoPlayerController? _controller;
   int currentIndex = 0;
   Timer? _timer;
+  Timer? _sarcasmTimer;
+  final Random _random = Random();
 
   final List<Map<String, String>> weatherData = [
     {
@@ -65,6 +68,18 @@ class _WeatherControlState extends State<WeatherControl> {
     },
   ];
 
+  final List<String> sarcasticQuotes = [
+    "Even Mars thinks your Wi-Fi is slow.",
+    "Don’t worry, you’re doing… well, you’re here at least.",
+    "The dust storm is smarter than your last Google search.",
+    "Your spacesuit called — it wants a new owner.",
+    "If brains were oxygen, you’d suffocate here.",
+    "Mars says hi… and also that you’re lost.",
+    "You walk slower than the Mars rover on low battery.",
+    "Congrats! You’re officially part of the problem, Earthling.",
+    "Oxygen is overrated anyway.",
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -73,6 +88,8 @@ class _WeatherControlState extends State<WeatherControl> {
       const Duration(seconds: 30),
           (_) => _nextWeather(),
     );
+
+    _scheduleRandomSarcasm();
   }
 
   void _initVideo() {
@@ -95,10 +112,39 @@ class _WeatherControlState extends State<WeatherControl> {
     _initVideo();
   }
 
+  void _scheduleRandomSarcasm() {
+    // Cancel old timer
+    _sarcasmTimer?.cancel();
+    // Random delay between 30–90 seconds
+    int delay = 30 + _random.nextInt(61);
+    _sarcasmTimer = Timer(Duration(seconds: delay), () {
+      _showSarcasm();
+      _scheduleRandomSarcasm();
+    });
+  }
+
+  void _showSarcasm() {
+    if (!mounted) return;
+    final randomQuote =
+    sarcasticQuotes[_random.nextInt(sarcasticQuotes.length)];
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          randomQuote,
+          style: GoogleFonts.orbitron(color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _controller?.dispose();
     _timer?.cancel();
+    _sarcasmTimer?.cancel();
     super.dispose();
   }
 

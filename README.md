@@ -1,3 +1,16 @@
+MarsApp™ is a gloriously pointless mobile & web app, proudly built with Flutter.  
+It solves no problems, changes nothing, and still demands your attention.  
+Why? Because productivity is overrated.
+
+---
+
+## ✨ Features
+- *Sarcastic Pop-ups* – Mock your life choices in real time.
+- *Video Backgrounds* – Because static backgrounds are too mainstream.
+- *Useless Settings* – They exist. That’s enough.
+- *Random Sound Effects* – For no reason whatsoever.
+- *Minimal Utility* – Optimized for maximum underwhelm.
+
 # mars_app
 
 A new Flutter project.

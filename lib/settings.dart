@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show AppBar, BuildContext, Card, Color, Colors, EdgeInsets, FontWeight, Icon, IconData, Icons, ListTile, ListView, Scaffold, StatelessWidget, Switch, Text, TextStyle, Widget;
 import 'package:google_fonts/google_fonts.dart';
 
 class SettingsPage extends StatelessWidget {

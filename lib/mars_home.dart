@@ -5,6 +5,8 @@ import 'package:video_player/video_player.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'aboutus.dart';
 import 'feedback.dart';
+import 'settings.dart';
+import 'help.dart';
 
 class WeatherControl extends StatefulWidget {
   const WeatherControl({super.key});
@@ -92,17 +94,14 @@ class _WeatherControlState extends State<WeatherControl> {
     "It takes 687 Earth days to orbit the Sun… and you still wouldn’t finish that project.",
     "Mars is covered in iron oxide… so it’s literally rusting away like your motivation.",
     "Water exists on Mars… too bad you can’t drink sarcasm.",
-    "Mars is 225 million km away from Earth… and still closer than your goals."
+    "Mars is 225 million km away from Earth… and still closer than your goals.",
   ];
 
   @override
   void initState() {
     super.initState();
     _initVideo();
-    _timer = Timer.periodic(
-      const Duration(seconds: 30),
-          (_) => _nextWeather(),
-    );
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _nextWeather());
 
     _scheduleRandomSarcasm();
 
@@ -110,7 +109,7 @@ class _WeatherControlState extends State<WeatherControl> {
     _updateMarsFact();
     _factsTimer = Timer.periodic(
       const Duration(seconds: 15),
-          (_) => _updateMarsFact(),
+      (_) => _updateMarsFact(),
     );
   }
 
@@ -146,7 +145,7 @@ class _WeatherControlState extends State<WeatherControl> {
   void _showSarcasm() {
     if (!mounted) return;
     final randomQuote =
-    sarcasticQuotes[_random.nextInt(sarcasticQuotes.length)];
+        sarcasticQuotes[_random.nextInt(sarcasticQuotes.length)];
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -164,7 +163,7 @@ class _WeatherControlState extends State<WeatherControl> {
     if (!mounted) return;
     setState(() {
       _currentMarsFact =
-      sarcasticMarsFacts[_random.nextInt(sarcasticMarsFacts.length)];
+          sarcasticMarsFacts[_random.nextInt(sarcasticMarsFacts.length)];
     });
   }
 
@@ -188,15 +187,15 @@ class _WeatherControlState extends State<WeatherControl> {
         children: [
           _controller != null && _controller!.value.isInitialized
               ? SizedBox.expand(
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                width: _controller!.value.size.width,
-                height: _controller!.value.size.height,
-                child: VideoPlayer(_controller!),
-              ),
-            ),
-          )
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: _controller!.value.size.width,
+                      height: _controller!.value.size.height,
+                      child: VideoPlayer(_controller!),
+                    ),
+                  ),
+                )
               : const Center(child: CircularProgressIndicator()),
 
           SafeArea(
@@ -298,10 +297,7 @@ class _WeatherControlState extends State<WeatherControl> {
           Expanded(
             child: Text(
               _currentMarsFact,
-              style: GoogleFonts.orbitron(
-                fontSize: 16,
-                color: Colors.white70,
-              ),
+              style: GoogleFonts.orbitron(fontSize: 16, color: Colors.white70),
             ),
           ),
         ],
@@ -314,14 +310,8 @@ class _WeatherControlState extends State<WeatherControl> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text(
-            "$label: ",
-            style: GoogleFonts.orbitron(color: Colors.white),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.orbitron(color: Colors.white),
-          ),
+          Text("$label: ", style: GoogleFonts.orbitron(color: Colors.white)),
+          Text(value, style: GoogleFonts.orbitron(color: Colors.white)),
         ],
       ),
     );
@@ -366,11 +356,21 @@ class _WeatherControlState extends State<WeatherControl> {
           }),
           _buildDrawerItem(Icons.settings, "Settings", () {
             Navigator.pop(context);
-            _showDialog("Settings", "Settings are currently unavailable.");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsPage()),
+            );
           }),
           _buildDrawerItem(Icons.bug_report, "Report Glitch", () {
             Navigator.pop(context);
             _showDialog("Glitch Report", "This feature is under maintenance.");
+          }),
+          _buildDrawerItem(Icons.help, "Help & FAQ", () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HelpPage()),
+            );
           }),
         ],
       ),
@@ -390,13 +390,22 @@ class _WeatherControlState extends State<WeatherControl> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.black,
-        title: Text(title, style: GoogleFonts.orbitron(color: Colors.deepOrange)),
-        content: Text(message, style: GoogleFonts.orbitron(color: Colors.white)),
+        title: Text(
+          title,
+          style: GoogleFonts.orbitron(color: Colors.deepOrange),
+        ),
+        content: Text(
+          message,
+          style: GoogleFonts.orbitron(color: Colors.white),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("CLOSE", style: TextStyle(color: Colors.deepOrange)),
-          )
+            child: const Text(
+              "CLOSE",
+              style: TextStyle(color: Colors.deepOrange),
+            ),
+          ),
         ],
       ),
     );
@@ -409,8 +418,10 @@ class _WeatherControlState extends State<WeatherControl> {
       builder: (_) {
         return AlertDialog(
           backgroundColor: Colors.black,
-          title: Text("Mars VPN",
-              style: GoogleFonts.orbitron(color: Colors.deepOrange)),
+          title: Text(
+            "Mars VPN",
+            style: GoogleFonts.orbitron(color: Colors.deepOrange),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -427,8 +438,10 @@ class _WeatherControlState extends State<WeatherControl> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("CANCEL",
-                  style: TextStyle(color: Colors.deepOrange)),
+              child: const Text(
+                "CANCEL",
+                style: TextStyle(color: Colors.deepOrange),
+              ),
             ),
           ],
         );

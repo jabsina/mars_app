@@ -25,7 +25,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Martian AI has evaluated your comment: 0.0001% useful.'),
-          backgroundColor: const Color(0xFF121212),
+          backgroundColor: Colors.redAccent,
         ),
       );
 

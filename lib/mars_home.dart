@@ -86,15 +86,13 @@ class _WeatherControlState extends State<WeatherControl> {
   ];
 
   final List<String> sarcasticMarsFacts = [
-    "Mars sunsets are blue… unlike your life, which is mostly grey.",
-    "A day on Mars is 24h 39m… still not enough time for you to be productive.",
-    "There’s no oxygen on Mars… just like in your social life.",
-    "Mars has two moons… both of them ignoring you.",
-    "The average temperature on Mars is -63°C… colder than your ex’s heart.",
-    "It takes 687 Earth days to orbit the Sun… and you still wouldn’t finish that project.",
-    "Mars is covered in iron oxide… so it’s literally rusting away like your motivation.",
-    "Water exists on Mars… too bad you can’t drink sarcasm.",
-    "Mars is 225 million km away from Earth… and still closer than your goals.",
+    "Mars: the galaxy's top vacation spot for people who love sand and regret.",
+    "Weather forecast: dusty, cold, and still better than your ex's cooking.",
+    "Mars has two moons, because one wasn’t enough to watch over this mess.",
+    "The sunsets here are blue. The jealousy from Earth is green.",
+    "Olympus Mons is the tallest mountain in the solar system — perfect for losing your breath and your will to live.",
+    "On Mars, water is a rumor and warmth is a luxury.",
+    "A day on Mars is only 37 minutes longer than Earth — just enough extra time to realize you made a bad choice moving here.",
   ];
 
   @override
@@ -102,10 +100,7 @@ class _WeatherControlState extends State<WeatherControl> {
     super.initState();
     _initVideo();
     _timer = Timer.periodic(const Duration(seconds: 30), (_) => _nextWeather());
-
     _scheduleRandomSarcasm();
-
-    // Initialize the first Mars fact and start timer to update it
     _updateMarsFact();
     _factsTimer = Timer.periodic(
       const Duration(seconds: 15),
@@ -239,7 +234,7 @@ class _WeatherControlState extends State<WeatherControl> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       _buildRow("Wind", weather['wind']!),
                       _buildRow("Dust Level", weather['dust']!),
@@ -256,13 +251,10 @@ class _WeatherControlState extends State<WeatherControl> {
                       fontSize: 14,
                       color: Colors.black,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.center, // ✅ Centered
                   ),
                 ),
-
-                // New Mars Facts Tile inserted here
-                _buildMarsFactsTile(),
-
+                _buildMarsFactsTile(), // ✅ Centered version
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -291,14 +283,17 @@ class _WeatherControlState extends State<WeatherControl> {
         color: Colors.deepOrange.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text("👽 ", style: TextStyle(fontSize: 24)),
-          Expanded(
-            child: Text(
-              _currentMarsFact,
-              style: GoogleFonts.orbitron(fontSize: 16, color: Colors.white70),
-            ),
+          const Text("👽", style: TextStyle(fontSize: 24)),
+          const SizedBox(height: 8),
+          Text(
+            _currentMarsFact,
+            style: GoogleFonts.orbitron(fontSize: 16, color: Colors.white70),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
